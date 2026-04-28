@@ -316,20 +316,20 @@ class AnimateurApp(ctk.CTk):
         self.title("Quiz MQTT — Animateur")
         self.geometry("1400x800")
         self.resizable(True, True)
-        self.parties_actives = {}  # code → PartieFrame
+        self.parties_actives = {}  # code : PartieFrame
 
-        # ── TITRE ──────────────────────────────────────────────
+        # Titre
         ctk.CTkLabel(self, text="🎯 Quiz MQTT — Animateur",
                      font=ctk.CTkFont(size=24, weight="bold")).pack(pady=10)
 
-        # ── BOUTON NOUVELLE PARTIE ─────────────────────────────
+        # Bouton nouvelle partie
         self.btn_nouvelle = ctk.CTkButton(self, text="➕ Nouvelle partie",
                                            command=self.creer_partie,
                                            width=200, height=40,
                                            font=ctk.CTkFont(size=14, weight="bold"))
         self.btn_nouvelle.pack(pady=5)
 
-        # ── FRAME CREATION ─────────────────────────────────────
+        # Création frame
         self.frame_creation = ctk.CTkFrame(self)
         self.frame_creation.pack(pady=5)
 
@@ -353,7 +353,7 @@ class AnimateurApp(ctk.CTk):
 
         self.frame_creation.pack_forget()
 
-        # ── GRILLE DES PARTIES ─────────────────────────────────
+        # Grille des parties
         self.frame_parties = ctk.CTkFrame(self, fg_color="transparent")
         self.frame_parties.pack(fill="both", expand=True, padx=20, pady=10)
 
