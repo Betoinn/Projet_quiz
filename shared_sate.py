@@ -15,3 +15,5 @@ state           = "attente"
 question_active = None
 reponse_envoyee = False
 scores_recus    = False
+
+#test
