@@ -19,10 +19,7 @@ ctk.set_default_color_theme("blue")
 MAX_PARTIES = 4
 
 class PartieFrame(ctk.CTkFrame):
-    """
-    Cadre représentant une partie sur l'écran de l'animateur.
-    Chaque partie a son propre publisher, subscriber et état.
-    """
+
     def __init__(self, master, code, app, **kwargs):
         super().__init__(master, **kwargs)
         self.code = code
