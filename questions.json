@@ -19,12 +19,12 @@ Created on Tue Apr 28 09:37:10 2026
     },
     {
         "numero": 2,
-        "question": "Quel est le plus grand océan du monde ?",
+        "question": "Quelle note mérite-on ?",
         "choix": {
-            "A": "Atlantique",
-            "B": "Indien",
-            "C": "Arctique",
-            "D": "Pacifique"
+            "A": "20",
+            "B": "15",
+            "C": "10",
+            "D": "0"
         },
         "reponse": "D"
     }
