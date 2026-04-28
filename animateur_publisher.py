@@ -9,4 +9,3 @@ import paho.mqtt.client as paho
 
 BROKER = "broker.emqx.io"
 PORT = 1883
-test
