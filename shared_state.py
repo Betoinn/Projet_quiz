@@ -1,20 +1,42 @@
+import random
+import string
+
 BROKER = "broker.emqx.io"
 PORT   = 1883
 PREFIX = "isen-2026-NBEK"
 
-def topic(path):
-    return f"{PREFIX}/quiz/{path}"
+def topic(code, path):
+    return f"{PREFIX}/quiz/{code}/{path}"
 
-# État animateur
-joueurs_presents = {}   # joueur pret ou offline
-reponses_tour    = {}   # affichage de la réponse du tour actuel
-scores           = {}   # score : réponse correcte ou fausse, total à la fin
+def topic_serveur(path):
+    return f"{PREFIX}/serveur/{path}"
 
-# État joueur
-state                = "attente"   # état global du broker
-question_active      = None        # question en cours
-reponse_envoyee      = False       # est-ce que le joueur a répondu ?
-scores_recus         = False       # classement final reçu ?
-reponses_tour_joueur = None        # réponse du joueur pour la correction
-correction_active    = None        # données de correction en cours
-classement_final     = None        # classement final
+def generer_code():
+    """Génère un code unique de 6 caractères pour une partie."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+# ── Parties en cours (animateur) ─────────────────
+# code → dict de l'état de la partie
+parties = {}
+
+def nouvelle_partie(code, questions):
+    """Initialise une nouvelle partie dans le state."""
+    parties[code] = {
+        "state":           "attente",
+        "questions":       questions,
+        "question_index":  0,
+        "joueurs_presents": {},
+        "reponses_tour":   {},
+        "scores":          {},
+    }
+
+# ── État joueur ───────────────────────────────────
+joueur_state            = "attente"   # état global de la partie
+joueur_code             = None        # code de la partie rejointe
+question_active         = None        # question en cours
+reponse_envoyee         = False       # le joueur a-t-il répondu ?
+scores_recus            = False       # classement final reçu ?
+reponses_tour_joueur    = None        # réponse du joueur pour la correction
+correction_active       = None        # données de correction
+classement_final        = None        # classement reçu en fin de partie
+questions_recues        = None        # questions reçues du serveur

@@ -15,8 +15,8 @@ import animateur_subscriber as sub_module
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-with open("questions.json", "r", encoding="utf-8") as f:
-    QUESTIONS = json.load(f)
+with open("questions.json", "r", encoding="utf-8") as file:
+    QUESTIONS = json.load(file)
 
 class AnimateurApp(ctk.CTk):
     def __init__(self):

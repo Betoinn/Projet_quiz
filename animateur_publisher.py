@@ -10,8 +10,7 @@ import shared_state as state
 
 def build_client():
     pub = paho.Client(
-        callback_api_version=paho.CallbackAPIVersion.VERSION2,
-        client_id="animateur-pub-EK",
+        client_id="animateur-pub",
         protocol=paho.MQTTv5
     )
     pub.will_set(state.topic("presence/animateur"), "offline", qos=1, retain=True)

@@ -5,8 +5,7 @@ import shared_state as state
 
 def build_client():
     client = paho.Client(
-        callback_api_version=paho.CallbackAPIVersion.VERSION2,
-        client_id="animateur-sub-EK",
+        client_id="animateur-sub",
         protocol=paho.MQTTv5
     )
     client.on_connect = on_connect
