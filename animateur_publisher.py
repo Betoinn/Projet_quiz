@@ -25,3 +25,12 @@ TOPIC_PRESENCE   = f"isen-2026-NBEK/quiz/presence/+"
 TOPIC_REPONSES   = f"isen-2026-NBEK/quiz/reponse/+"
 TOPIC_RECAP      = f"isen-2026-NBEK/quiz/reponses_recap"
 
+# Chargement des questions
+with open("questions.json", "r", encoding="utf-8") as file :
+    QUESTIONS = json.load(file)
+
+# Variables globales
+joueurs_connectes = {}   # etat du joueur
+reponses_recues = {}     # réponse du joueur
+question_index = 0
+scores = {}              # nb de bonnes réponses du joueur
