@@ -6,12 +6,12 @@ def topic(path):
     return f"{PREFIX}/quiz/{path}"
 
 # État animateur
-joueurs_presents = {}   # pseudo : "pret", "offline"
-reponses_tour    = {}   # pseudo : lettre réponse (tour actuel)
-scores           = {}   # pseudo : "correct": int, "total": int
+joueurs_presents = {}   # joueur pret ou offline
+reponses_tour    = {}   # affichage de la réponse du tour actuel
+scores           = {}   # score : réponse correcte ou fausse, total à la fin
 
 # État joueur
-state                = "attente"   # état global reçu du broker
+state                = "attente"   # état global du broker
 question_active      = None        # question en cours
 reponse_envoyee      = False       # est-ce que le joueur a répondu ?
 scores_recus         = False       # classement final reçu ?
