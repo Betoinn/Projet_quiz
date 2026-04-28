@@ -103,14 +103,20 @@ def on_disconnect(client, userdata, flags, rc, properties=None):
 # ── Lancement du serveur ──────────────────────────────────────
 client = paho.Client(
     callback_api_version=paho.CallbackAPIVersion.VERSION2,
-    client_id="serveur-quiz-EK",
+    client_id="serveur-quiz-NBEK-2026",
     protocol=paho.MQTTv5
 )
 client.on_connect    = on_connect
 client.on_message    = on_message
 client.on_disconnect = on_disconnect
 
-client.connect(BROKER, PORT, clean_start=False)
+client.connect(BROKER, PORT, clean_start=True)
 print("[SERVEUR] Démarrage...")
 print(f"[SERVEUR] {len(TOUTES_QUESTIONS)} questions disponibles")
-client.loop_forever()
+import threading
+
+def lancer_serveur():
+    client.loop_forever()
+
+thread = threading.Thread(target=lancer_serveur, daemon=True)
+thread.start()

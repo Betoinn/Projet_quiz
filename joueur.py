@@ -272,7 +272,7 @@ class JoueurApp(ctk.CTk):
         self.frame_correction.pack_forget()
         self.frame_question.pack(fill="both", expand=True, padx=20, pady=10)
  
-        self.label_num_q.configure(text=f"Question {q.get('numero', '?')}")
+        self.label_num_q.configure(text=f"Question {state.question_active.get('num_affiche', q.get('numero', '?'))}")
         self.label_question_joueur.configure(text=q["question"])
         self.label_attente_correction.configure(text="")
  
@@ -408,7 +408,12 @@ class JoueurApp(ctk.CTk):
         self.destroy()
  
  
-if __name__ == "__main__":
+import threading
+
+def lancer():
     app = JoueurApp()
     app.protocol("WM_DELETE_WINDOW", app.on_closing)
     app.mainloop()
+
+thread = threading.Thread(target=lancer, daemon=True)
+thread.start()

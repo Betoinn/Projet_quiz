@@ -76,9 +76,9 @@ class PartieFrame(ctk.CTkFrame):
                                          font=ctk.CTkFont(size=12, weight="bold"))
         self.btn_lancer.grid(row=0, column=0, padx=5)
 
-        self.btn_terminer = ctk.CTkButton(frame_boutons, text="⏹ Terminer",
+        self.btn_terminer = ctk.CTkButton(frame_boutons, text="Stop",
                                            command=self.terminer_partie,
-                                           state="disabled", width=110, height=32,
+                                           state="normal", width=110, height=32,
                                            font=ctk.CTkFont(size=12, weight="bold"),
                                            fg_color="#e74c3c", hover_color="#c0392b")
         self.btn_terminer.grid(row=0, column=1, padx=5)
@@ -189,13 +189,16 @@ class PartieFrame(ctk.CTkFrame):
         pub_module.publier_recap(self.pub, self.code, {})
 
         idx = partie["question_index"]
-        q   = partie["questions"][idx]
+        q = partie["questions"][idx]
+        q["num_affiche"] = partie["question_index"] + 1
 
         pub_module.publier_question(self.pub, self.code, q)
         pub_module.publier_etat(self.pub, self.code, "question")
 
+        nb_total = len(partie["questions"])
+        num_affiche = partie["question_index"] + 1
         self.label_question.configure(
-            text=f"Q{idx+1}/{len(partie['questions'])} : {q['question']}")
+            text=f"Q{num_affiche}/{nb_total} : {q['question']}")
         self.label_reponses.configure(text="Réponses : 0")
         self.label_correction.configure(text="")
 
@@ -449,7 +452,12 @@ class AnimateurApp(ctk.CTk):
         self.destroy()
 
 
-if __name__ == "__main__":
+import threading
+
+def lancer():
     app = AnimateurApp()
     app.protocol("WM_DELETE_WINDOW", app.on_closing)
     app.mainloop()
+
+thread = threading.Thread(target=lancer, daemon=True)
+thread.start()
