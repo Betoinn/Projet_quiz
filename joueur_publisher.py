@@ -19,7 +19,7 @@ def build_client(pseudo, code):
         client_id=f"joueur-pub-{pseudo}-{code}",
         protocol=paho.MQTTv5
     )
-    # LWT : si le joueur crash, le broker publie "offline" automatiquement
+    # LWT 
     pub.will_set(state.topic(code, f"presence/{pseudo}"),
                  "offline", qos=1, retain=True)
     pub.on_connect    = lambda c, u, f, rc, p=None: on_connect(c, u, f, rc, pseudo, code, p)

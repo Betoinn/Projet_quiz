@@ -13,7 +13,7 @@ import shared_state as state
 BROKER = "broker.emqx.io"
 PORT   = 1883
 
-# Chargement de toutes les questions depuis le JSON
+# Chargement de toutes les questions depuis le json
 with open("questions.json", "r", encoding="utf-8") as f:
     TOUTES_QUESTIONS = json.load(f)
 
@@ -31,7 +31,7 @@ def on_message(client, userdata, msg):
     if not payload:
         return
 
-    # ── Demande de questions ──────────────────────────────────
+    # Demande de questions 
     if "serveur/demande" in topic:
         code = topic.split("/")[-1]
         try:
@@ -49,10 +49,10 @@ def on_message(client, userdata, msg):
                 print(f"[SERVEUR] Erreur : {nb} > {len(TOUTES_QUESTIONS)}")
                 return
 
-            # Pioche aléatoirement N questions
+            # Pioche aléatoirement le nb de questions
             questions = random.sample(TOUTES_QUESTIONS, nb)
 
-            # Ajoute le timer à chaque question
+            # Timer de 15 secondes pour chaque question
             for q in questions:
                 q["timer"] = 15
 
@@ -68,7 +68,7 @@ def on_message(client, userdata, msg):
         except Exception as e:
             print(f"[SERVEUR] Erreur demande : {e}")
 
-    # ── Scores finaux reçus → calcul des stats ────────────────
+    # Scores finaux reçus, calcul des stats 
     elif "/quiz/" in topic and "/scores" in topic:
         code = topic.split("/")[3]
         try:
