@@ -28,7 +28,7 @@ def nouvelle_partie(code, questions):
         "scores":          {},
     }
 
-# ── État joueur ───────────────────────────────────
+# État joueur 
 joueur_state            = "attente"   # état global de la partie
 joueur_code             = None        # code de la partie rejointe
 question_active         = None        # question en cours

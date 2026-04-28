@@ -3,13 +3,7 @@ import json
 import shared_state as state
  
 def build_client(code, on_questions_recues, on_joueur_update, on_reponse_recue):
-    """
-    Crée et retourne le client MQTT subscriber de l'animateur.
-    Paramètres callbacks :
-    - on_questions_recues : appelé quand le serveur répond avec les questions
-    - on_joueur_update    : appelé quand un joueur se connecte/déconnecte
-    - on_reponse_recue    : appelé quand un joueur envoie une réponse
-    """
+   
     client = paho.Client(
         callback_api_version=paho.CallbackAPIVersion.VERSION2,
         client_id=f"animateur-sub-{code}",  # ID unique par partie
