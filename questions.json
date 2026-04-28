@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Apr 28 09:37:10 2026
+
+@author: Utilisateur
+"""
+
+[
+    {
+        "numero": 1,
+        "question": "Quelle est la capitale de la France ?",
+        "choix": {
+            "A": "Londres",
+            "B": "Paris",
+            "C": "Madrid",
+            "D": "Berlin"
+        },
+        "reponse": "B"
+    },
+    {
+        "numero": 2,
+        "question": "Quel est le plus grand océan du monde ?",
+        "choix": {
+            "A": "Atlantique",
+            "B": "Indien",
+            "C": "Arctique",
+            "D": "Pacifique"
+        },
+        "reponse": "D"
+    }
+]
