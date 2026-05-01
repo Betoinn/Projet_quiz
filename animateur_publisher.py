@@ -30,8 +30,13 @@ def on_connect(client, userdata, flags, rc, code, properties=None):
     client.publish(state.topic(code, "state"), "attente", qos=1, retain=True)
  
 def on_disconnect(client, userdata, flags, rc, properties=None):
-    """Appelé automatiquement à la déconnexion."""
     print(f"[PUB animateur] Déconnecté : {rc}")
+    if str(rc) != "Normal disconnection":
+        print(f"[PUB animateur] Tentative de reconnexion...")
+        try:
+            client.reconnect()
+        except Exception as e:
+            print(f"[PUB animateur] Erreur reconnexion : {e}")
  
 # ── Fonctions de publication ──────────────────────────────────
  
@@ -50,6 +55,11 @@ def publier_etat(client, code, etat):
     """Publie l'état de la partie en retained."""
     client.publish(state.topic(code, "state"), etat, qos=1, retain=True)
     print(f"[PUB animateur {code}] État → {etat}")
+
+def publier_pause(client, code):
+    """Publie l'état pause en retained."""
+    client.publish(state.topic(code, "state"), "pause", qos=1, retain=True)
+    print(f"[PUB animateur {code}] Etat → pause")
  
 def publier_correction(client, code, bonne_reponse, texte_reponse, reponses):
     """Publie la correction après chaque question."""

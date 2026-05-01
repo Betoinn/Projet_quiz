@@ -28,6 +28,7 @@ class PartieFrame(ctk.CTkFrame):
         self.sub  = None
         self.timer_thread = None
         self.partie_lancee = False
+        self.en_pause = False
 
         # ── TITRE ──────────────────────────────────────────────
         ctk.CTkLabel(self, text=f"Partie : {code}",
@@ -67,21 +68,29 @@ class PartieFrame(ctk.CTkFrame):
         self.label_scores.pack(pady=3)
 
         # ── BOUTONS ────────────────────────────────────────────
-        frame_boutons = ctk.CTkFrame(self, fg_color="transparent")
-        frame_boutons.pack(pady=5)
+        self.frame_boutons = ctk.CTkFrame(self, fg_color="transparent")
+        self.frame_boutons.pack(pady=5)
 
-        self.btn_lancer = ctk.CTkButton(frame_boutons, text="▶ Lancer",
+        self.btn_lancer = ctk.CTkButton(self.frame_boutons, text="Lancer",
                                          command=self.lancer_partie,
                                          state="disabled", width=110, height=32,
                                          font=ctk.CTkFont(size=12, weight="bold"))
         self.btn_lancer.grid(row=0, column=0, padx=5)
 
-        self.btn_terminer = ctk.CTkButton(frame_boutons, text="Stop",
-                                           command=self.terminer_partie,
-                                           state="normal", width=110, height=32,
-                                           font=ctk.CTkFont(size=12, weight="bold"),
-                                           fg_color="#e74c3c", hover_color="#c0392b")
-        self.btn_terminer.grid(row=0, column=1, padx=5)
+        self.btn_stop = ctk.CTkButton(self.frame_boutons, text="Stop",
+                                       command=self.mettre_en_pause,
+                                       state="normal", width=110, height=32,
+                                       font=ctk.CTkFont(size=12, weight="bold"),
+                                       fg_color="#e74c3c", hover_color="#c0392b")
+        self.btn_stop.grid(row=0, column=1, padx=5)
+
+        self.btn_terminer_def = ctk.CTkButton(self.frame_boutons, text="Terminer",
+                                               command=self.terminer_partie,
+                                               state="normal", width=110, height=32,
+                                               font=ctk.CTkFont(size=12, weight="bold"),
+                                               fg_color="#8e44ad", hover_color="#6c3483")
+        self.btn_terminer_def.grid(row=0, column=2, padx=5)
+        self.btn_terminer_def.grid_remove()  # caché par défaut
 
     def setup_mqtt(self):
         """Initialise et connecte les clients MQTT pour cette partie."""
@@ -121,12 +130,17 @@ class PartieFrame(ctk.CTkFrame):
         """Appelé quand un joueur se connecte ou se déconnecte."""
         self.after(0, self.maj_lobby)
 
-        # Si partie en cours et il reste moins de 2 joueurs → terminer
-        if self.partie_lancee:
-            prets = [p for p, s in state.parties[code]["joueurs_presents"].items()
-                     if s == "pret"]
-            if len(prets) < 1:
-                self.after(0, self.terminer_partie)
+        # Vérifie si tous les joueurs sont offline
+        partie = state.parties.get(code, {})
+        joueurs = partie.get("joueurs_presents", {})
+        prets = [p for p, s in joueurs.items() if s == "pret"]
+
+        if self.partie_lancee and len(prets) == 0:
+            # Plus aucun joueur → fermer la partie
+            self.after(0, self.fermer_partie)
+        elif self.partie_lancee and len(prets) < 2:
+            # Il reste 1 joueur → terminer la partie normalement
+            self.after(0, self.terminer_partie_fin)
 
     def on_reponse_recue(self, code, pseudo, reponse):
         """Appelé quand un joueur envoie une réponse."""
@@ -174,13 +188,34 @@ class PartieFrame(ctk.CTkFrame):
         """Lance la partie — publie la première question."""
         self.partie_lancee = True
         self.btn_lancer.configure(state="disabled")
-        self.btn_terminer.configure(state="normal")
         partie = state.parties[self.code]
         prets  = [p for p, s in partie["joueurs_presents"].items() if s == "pret"]
         for p in prets:
             partie["scores"].setdefault(p, {"correct": 0, "total": 0})
         pub_module.publier_etat(self.pub, self.code, "question")
         self.afficher_question()
+
+    def mettre_en_pause(self):
+        """Met la partie en pause."""
+        self.en_pause = True
+        pub_module.publier_pause(self.pub, self.code)
+        # Stop → Reprendre (vert)
+        self.btn_stop.configure(text="Reprendre", command=self.reprendre,
+                                 fg_color="#2ecc71", hover_color="#27ae60")
+        # Affiche le bouton Terminer
+        self.btn_terminer_def.grid()
+        self.label_statut.configure(text="Partie en pause", text_color="#f0a500")
+
+    def reprendre(self):
+        """Reprend la partie après une pause."""
+        self.en_pause = False
+        pub_module.publier_etat(self.pub, self.code, "question")
+        # Reprendre → Stop (rouge)
+        self.btn_stop.configure(text="Stop", command=self.mettre_en_pause,
+                                 fg_color="#e74c3c", hover_color="#c0392b")
+        # Cache le bouton Terminer
+        self.btn_terminer_def.grid_remove()
+        self.label_statut.configure(text="Partie en cours", text_color="#2ecc71")
 
     def afficher_question(self):
         """Publie et affiche la question en cours."""
@@ -214,10 +249,18 @@ class PartieFrame(ctk.CTkFrame):
         partie = state.parties[self.code]
 
         while time.time() - debut < timer:
+            # Si en pause, on suspend le timer
+            if self.en_pause:
+                time.sleep(0.5)
+                continue
             prets  = [p for p, s in partie["joueurs_presents"].items() if s == "pret"]
             nb_rep = len(partie["reponses_tour"])
             if nb_rep >= len(prets):
                 break
+            time.sleep(0.5)
+
+        # Attend la fin de la pause avant d'afficher la correction
+        while self.en_pause:
             time.sleep(0.5)
 
         # Affiche la correction
@@ -249,7 +292,7 @@ class PartieFrame(ctk.CTkFrame):
             s = partie["scores"][p]
             scores_txt += f"{p}: {s['correct']}/{s['total']}  "
         self.label_correction.configure(
-            text=f"✅ Bonne réponse : {bonne}. {texte}")
+            text=f"Bonne réponse : {bonne}. {texte}")
         self.label_scores.configure(text=scores_txt)
 
         # Attend 5 secondes puis passe à la suite
@@ -287,20 +330,44 @@ class PartieFrame(ctk.CTkFrame):
         pub_module.publier_etat(self.pub, self.code, "fin")
 
         # Affiche le classement
-        txt = "🏆 Classement :\n"
-        medailles = {0: "🥇", 1: "🥈", 2: "🥉"}
+        txt = "Classement :\n"
+        medailles = {0: "1.", 1: "2.", 2: "3."}
         for i, j in enumerate(classement):
             txt += f"{medailles.get(i, f'{i+1}.')} {j['pseudo']} — {j['correct']}/{j['total']} ({j['pct']}%)\n"
         self.label_scores.configure(text=txt)
         self.label_correction.configure(text="")
-        self.btn_terminer.configure(state="disabled")
+        self.btn_stop.configure(state="disabled")
+        self.btn_terminer_def.grid_remove()
         self.partie_lancee = False
         self.app.partie_terminee(self.code)
 
     def terminer_partie(self):
-        """Termine la partie prématurément."""
+        """Termine la partie définitivement et supprime la frame."""
+        self.en_pause = False
         pub_module.publier_etat(self.pub, self.code, "fin")
         self.terminer_partie_fin()
+        # Attend que les joueurs reçoivent les scores avant de déconnecter
+        time.sleep(2)
+        self.deconnecter()
+        if self.code in state.parties:
+            del state.parties[self.code]
+            if self.code in self.app.parties_actives:
+                del self.app.parties_actives[self.code]
+        self.grid_forget()
+        self.destroy()
+        self.app.btn_nouvelle.pack(pady=5)
+
+    def fermer_partie(self):
+        """Ferme le cadre de la partie quand tous les joueurs sont partis."""
+        pub_module.publier_etat(self.pub, self.code, "fin")
+        self.deconnecter()
+        if self.code in state.parties:
+            del state.parties[self.code]
+        if self.code in self.app.parties_actives:
+            del self.app.parties_actives[self.code]
+        self.grid_forget()
+        self.destroy()
+        self.app.btn_nouvelle.pack(pady=5)
 
     def deconnecter(self):
         """Déconnecte proprement les clients MQTT."""
@@ -319,14 +386,14 @@ class AnimateurApp(ctk.CTk):
         self.title("Quiz MQTT — Animateur")
         self.geometry("1400x800")
         self.resizable(True, True)
-        self.parties_actives = {}  # code : PartieFrame
+        self.parties_actives = {}
 
         # Titre
-        ctk.CTkLabel(self, text="🎯 Quiz MQTT — Animateur",
+        ctk.CTkLabel(self, text="Quiz MQTT — Animateur",
                      font=ctk.CTkFont(size=24, weight="bold")).pack(pady=10)
 
         # Bouton nouvelle partie
-        self.btn_nouvelle = ctk.CTkButton(self, text="➕ Nouvelle partie",
+        self.btn_nouvelle = ctk.CTkButton(self, text="Nouvelle partie",
                                            command=self.creer_partie,
                                            width=200, height=40,
                                            font=ctk.CTkFont(size=14, weight="bold"))
@@ -382,7 +449,6 @@ class AnimateurApp(ctk.CTk):
                 text="Entre un nombre valide !")
             return
 
-        # Charge les questions pour vérifier le max
         with open("questions.json", "r", encoding="utf-8") as f:
             toutes = json.load(f)
 
@@ -447,7 +513,7 @@ class AnimateurApp(ctk.CTk):
 
     def on_closing(self):
         """Déconnecte proprement toutes les parties."""
-        for frame in self.parties_actives.values():
+        for frame in list(self.parties_actives.values()):
             frame.deconnecter()
         self.destroy()
 
