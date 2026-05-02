@@ -12,7 +12,6 @@ def topic_serveur(path):
     return f"{PREFIX}/serveur/{path}"
 
 def generer_code():
-    """Génère un code unique de 6 caractères pour une partie."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
 # Parties en cours (animateur) 
@@ -29,12 +28,12 @@ def nouvelle_partie(code, questions):
     }
 
 # État joueur 
-joueur_state            = "attente"   # état global de la partie
-joueur_code             = None        # code de la partie rejointe
+joueur_state            = "attente"   # état de la partie
+joueur_code             = None        # code de la partie 
 question_active         = None        # question en cours
 reponse_envoyee         = False       # envoie de la réponse du joueur
 scores_recus            = False       # reception du classement final 
 reponses_tour_joueur    = None        # réponse du joueur pour la correction
-correction_active       = None        # données de correction
-classement_final        = None        # classement reçu en fin de partie
+correction_active       = None        # correction à la fin d'une question
+classement_final        = None        # classement reçu 
 questions_recues        = None        # questions reçues du serveur
