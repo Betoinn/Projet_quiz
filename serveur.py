@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 28 15:01:28 2026
-
-@author: Utilisateur
-"""
-
 import paho.mqtt.client as paho
 import json
 import random
@@ -100,7 +93,7 @@ def on_message(client, userdata, msg):
 def on_disconnect(client, userdata, flags, rc, properties=None):
     print(f"[SERVEUR] Déconnecté : {rc}")
 
-# ── Lancement du serveur ──────────────────────────────────────
+# LANCEMENT DU SERVEUR
 client = paho.Client(
     callback_api_version=paho.CallbackAPIVersion.VERSION2,
     client_id="serveur-quiz-NBEK-2026",

@@ -28,7 +28,7 @@ def build_client(code, on_questions_recues, on_joueur_update, on_reponse_recue):
         if not payload:
             return
  
-        # ── Questions reçues du serveur ───────────────────────
+        # QUESTIONS RECUES DE SERVEUR
         if f"serveur/questions/{code}" in topic:
             try:
                 data = json.loads(payload)
@@ -43,7 +43,7 @@ def build_client(code, on_questions_recues, on_joueur_update, on_reponse_recue):
             except Exception as e:
                 print(f"[ERR] Questions malformées : {e}")
  
-        # ── Stats reçues du serveur ───────────────────────────
+        # STATUS RECUES DU SERVEUR
         elif f"serveur/stats/{code}" in topic:
             try:
                 data = json.loads(payload)
@@ -52,7 +52,7 @@ def build_client(code, on_questions_recues, on_joueur_update, on_reponse_recue):
             except Exception as e:
                 print(f"[ERR] Stats malformées : {e}")
  
-        # ── Présence d'un joueur ──────────────────────────────
+        # PRESENCE D'UN JOUEUR
         elif f"quiz/{code}/presence" in topic:
             pseudo = topic.split("/")[-1]
             if pseudo == "animateur":
@@ -65,7 +65,7 @@ def build_client(code, on_questions_recues, on_joueur_update, on_reponse_recue):
             on_joueur_update(code, pseudo, payload)
             print(f"[SUB animateur {code}] {pseudo} → {payload}")
  
-        # ── Réponse d'un joueur ───────────────────────────────
+        # REPONSE D'uN JOUEUR
         elif f"quiz/{code}/reponse" in topic:
             # Ignorer les retained (réponses d'une ancienne partie)
             if msg.retain:

@@ -38,7 +38,7 @@ def on_disconnect(client, userdata, flags, rc, properties=None):
         except Exception as e:
             print(f"[PUB animateur] Erreur reconnexion : {e}")
  
-# ── Fonctions de publication ──────────────────────────────────
+# FONCTIONS DE PUBLICATION
  
 def publier_demande_questions(client, code, nb_questions):
     """Envoie une demande au serveur pour obtenir N questions aléatoires."""

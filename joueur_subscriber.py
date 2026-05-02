@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 28 08:41:33 2026
-
-@author: Utilisateur
-
-joueur_subscriber.py
-"""
-
 import paho.mqtt.client as paho
 import json
 import shared_state as state

@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 27 14:25:25 2026
-
-@author: Utilisateur
-"""
-
 import customtkinter as ctk
 import time
 import json
@@ -30,11 +23,11 @@ class PartieFrame(ctk.CTkFrame):
         self.partie_lancee = False
         self.en_pause = False
 
-        # ── TITRE ──────────────────────────────────────────────
+        # TITRE
         ctk.CTkLabel(self, text=f"Partie : {code}",
                      font=ctk.CTkFont(size=14, weight="bold")).pack(pady=5)
 
-        # ── JOUEURS ────────────────────────────────────────────
+        # JOUEURS
         self.liste_joueurs = ctk.CTkTextbox(self, width=250, height=60,
                                              font=ctk.CTkFont(size=12),
                                              state="disabled")
@@ -45,7 +38,7 @@ class PartieFrame(ctk.CTkFrame):
                                           text_color="gray")
         self.label_statut.pack()
 
-        # ── QUESTION EN COURS ──────────────────────────────────
+        # QUESTION EN COURS
         self.label_question = ctk.CTkLabel(self, text="",
                                             font=ctk.CTkFont(size=12),
                                             wraplength=260)
@@ -61,13 +54,13 @@ class PartieFrame(ctk.CTkFrame):
                                               text_color="#2ecc71")
         self.label_correction.pack()
 
-        # ── SCORES ─────────────────────────────────────────────
+        # SCORES
         self.label_scores = ctk.CTkLabel(self, text="",
                                           font=ctk.CTkFont(size=11),
                                           text_color="#aaaaaa")
         self.label_scores.pack(pady=3)
 
-        # ── BOUTONS ────────────────────────────────────────────
+        # BOUTONS
         self.frame_boutons = ctk.CTkFrame(self, fg_color="transparent")
         self.frame_boutons.pack(pady=5)
 
