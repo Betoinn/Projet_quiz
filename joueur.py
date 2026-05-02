@@ -29,7 +29,7 @@ class JoueurApp(ctk.CTk):
         self.pub    = None
         self.sub    = None
 
-        # ── FRAME CONNEXION ────────────────────────────────────
+        # FRAME CONNEXION
         self.frame_connexion = ctk.CTkFrame(self)
         self.frame_connexion.pack(fill="both", expand=True, padx=60, pady=60)
 
@@ -61,7 +61,7 @@ class JoueurApp(ctk.CTk):
                                           font=ctk.CTkFont(size=13))
         self.label_erreur.pack()
 
-        # ── FRAME ATTENTE ──────────────────────────────────────
+        # RAME ATTENTE
         self.frame_attente = ctk.CTkFrame(self)
 
         ctk.CTkLabel(self.frame_attente, text="Quiz MQTT",
@@ -84,7 +84,7 @@ class JoueurApp(ctk.CTk):
                                                     text_color="red")
         self.label_animateur_statut.pack(pady=5)
 
-        # ── FRAME PAUSE ────────────────────────────────────────
+        # FRAME PAUSE
         self.frame_pause = ctk.CTkFrame(self)
 
         ctk.CTkLabel(self.frame_pause, text="Partie en pause",
@@ -94,7 +94,7 @@ class JoueurApp(ctk.CTk):
         ctk.CTkLabel(self.frame_pause, text="En attente de la reprise...",
                      font=ctk.CTkFont(size=14), text_color="gray").pack(pady=5)
 
-        # ── FRAME QUESTION ─────────────────────────────────────
+        # FRAME QUESTION
         self.frame_question = ctk.CTkFrame(self)
 
         self.frame_timer = ctk.CTkFrame(self.frame_question, fg_color="transparent")
@@ -145,7 +145,7 @@ class JoueurApp(ctk.CTk):
             font=ctk.CTkFont(size=14), text_color="gray")
         self.label_attente_correction.pack(pady=5)
 
-        # ── FRAME CORRECTION ───────────────────────────────────
+        # FRAME CORRECTION
         self.frame_correction = ctk.CTkFrame(self)
 
         self.label_resultat = ctk.CTkLabel(self.frame_correction, text="",
@@ -161,7 +161,7 @@ class JoueurApp(ctk.CTk):
                                               text_color="gray")
         self.label_ma_reponse.pack(pady=5)
 
-        # ── FRAME SCORES FINAUX ────────────────────────────────
+        # FRAME SCORES FINAUX
         self.frame_scores = ctk.CTkFrame(self)
 
         ctk.CTkLabel(self.frame_scores, text="Resultats finaux",

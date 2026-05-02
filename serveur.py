@@ -19,7 +19,7 @@ with open("questions.json", "r", encoding="utf-8") as f:
 
 def on_connect(client, userdata, flags, rc, properties=None):
     print(f"[SERVEUR] Connecté : {rc}")
-    # Souscrit aux demandes de questions de l'animateur (de toutes parties)
+    # Souscrit aux demandes de questions de l'animateur (toutes les parties)
     client.subscribe(state.topic_serveur("demande/+"), qos=1)
     # Souscrit aux scores de toutes les parties pour calculer les stats
     client.subscribe(f"{state.PREFIX}/quiz/+/scores", qos=1)
@@ -68,7 +68,7 @@ def on_message(client, userdata, msg):
         except Exception as e:
             print(f"[SERVEUR] Erreur demande : {e}")
 
-    # Scores finaux reçus et calcul des stats 
+    # Scores finaux reçus, calcul des stats 
     elif "/quiz/" in topic and "/scores" in topic:
         code = topic.split("/")[3]
         try:
@@ -100,7 +100,7 @@ def on_message(client, userdata, msg):
 def on_disconnect(client, userdata, flags, rc, properties=None):
     print(f"[SERVEUR] Déconnecté : {rc}")
 
-# Lancement du serveur 
+# Lancement du serveur
 client = paho.Client(
     callback_api_version=paho.CallbackAPIVersion.VERSION2,
     client_id="serveur-quiz-NBEK-2026",
