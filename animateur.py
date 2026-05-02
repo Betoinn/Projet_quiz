@@ -86,7 +86,7 @@ class PartieFrame(ctk.CTkFrame):
         self.btn_terminer_def.grid_remove()  # caché par défaut
 
     def setup_mqtt(self):
-        """Initialise et connecte les clients MQTT pour cette partie."""
+        #Initialise et connecte les clients MQTT pour une partie
         self.pub = pub_module.build_client(self.code)
         self.pub.connect(state.BROKER, state.PORT, clean_start=False)
         self.pub.loop_start()
@@ -109,7 +109,6 @@ class PartieFrame(ctk.CTkFrame):
         self.after(1000, self.maj_lobby)
 
     def on_questions_recues(self, questions, erreur):
-        """Appelé quand le serveur répond à la demande de questions."""
         if erreur:
             self.after(0, lambda: self.label_statut.configure(
                 text=erreur, text_color="red"))
@@ -120,28 +119,27 @@ class PartieFrame(ctk.CTkFrame):
             text_color="#2ecc71"))
 
     def on_joueur_update(self, code, pseudo, statut):
-        """Appelé quand un joueur se connecte ou se déconnecte."""
+        #Appelé quand un joueur se connecte ou se déco
         self.after(0, self.maj_lobby)
 
-        # Vérifie si tous les joueurs sont offline
+        # Vérifie si tous les joueurs sont online
         partie = state.parties.get(code, {})
         joueurs = partie.get("joueurs_presents", {})
         prets = [p for p, s in joueurs.items() if s == "pret"]
 
         if self.partie_lancee and len(prets) == 0:
-            # Plus aucun joueur → fermer la partie
+            # Plus aucun joueur -> fermer la partie
             self.after(0, self.fermer_partie)
         elif self.partie_lancee and len(prets) < 2:
-            # Il reste 1 joueur → terminer la partie normalement
+            # Il reste 1 joueur -> terminer la partie
             self.after(0, self.terminer_partie_fin)
 
     def on_reponse_recue(self, code, pseudo, reponse):
-        """Appelé quand un joueur envoie une réponse."""
         self.after(0, self.maj_reponses)
 
     def maj_lobby(self):
-        """Met à jour la liste des joueurs."""
-        partie = state.parties.get(self.code, {})
+        # Maj de la liste des joueurs
+        partie = state.parties.get(self.code, {}) 
         joueurs = partie.get("joueurs_presents", {})
         prets   = [p for p, s in joueurs.items() if s == "pret"]
 
@@ -156,7 +154,7 @@ class PartieFrame(ctk.CTkFrame):
             if len(prets) >= 2 and questions:
                 self.btn_lancer.configure(state="normal")
                 self.label_statut.configure(
-                    text=f"{len(prets)} joueurs prêts — tu peux lancer !",
+                    text=f"{len(prets)} joueurs prets, vous pouvez lancer",
                     text_color="#2ecc71")
             else:
                 self.btn_lancer.configure(state="disabled")
@@ -169,7 +167,7 @@ class PartieFrame(ctk.CTkFrame):
                         text_color="gray")
 
     def maj_reponses(self):
-        """Met à jour l'affichage des réponses reçues."""
+        #Met à jour l'affichage des réponses reçues
         partie  = state.parties.get(self.code, {})
         prets   = [p for p, s in partie.get("joueurs_presents", {}).items()
                    if s == "pret"]
@@ -178,7 +176,6 @@ class PartieFrame(ctk.CTkFrame):
             text=f"Réponses : {nb_rep}/{len(prets)}")
 
     def lancer_partie(self):
-        """Lance la partie — publie la première question."""
         self.partie_lancee = True
         self.btn_lancer.configure(state="disabled")
         partie = state.parties[self.code]
@@ -189,10 +186,9 @@ class PartieFrame(ctk.CTkFrame):
         self.afficher_question()
 
     def mettre_en_pause(self):
-        """Met la partie en pause."""
         self.en_pause = True
         pub_module.publier_pause(self.pub, self.code)
-        # Stop → Reprendre (vert)
+        # Stop : rajoute bouton Reprendre 
         self.btn_stop.configure(text="Reprendre", command=self.reprendre,
                                  fg_color="#2ecc71", hover_color="#27ae60")
         # Affiche le bouton Terminer
@@ -200,10 +196,9 @@ class PartieFrame(ctk.CTkFrame):
         self.label_statut.configure(text="Partie en pause", text_color="#f0a500")
 
     def reprendre(self):
-        """Reprend la partie après une pause."""
         self.en_pause = False
         pub_module.publier_etat(self.pub, self.code, "question")
-        # Reprendre → Stop (rouge)
+        # Reprendre : réaffiche bouton Stop 
         self.btn_stop.configure(text="Stop", command=self.mettre_en_pause,
                                  fg_color="#e74c3c", hover_color="#c0392b")
         # Cache le bouton Terminer
@@ -211,7 +206,7 @@ class PartieFrame(ctk.CTkFrame):
         self.label_statut.configure(text="Partie en cours", text_color="#2ecc71")
 
     def afficher_question(self):
-        """Publie et affiche la question en cours."""
+        # Publie et affiche la question en cours
         partie = state.parties[self.code]
         partie["reponses_tour"].clear()
         pub_module.publier_recap(self.pub, self.code, {})
@@ -230,13 +225,13 @@ class PartieFrame(ctk.CTkFrame):
         self.label_reponses.configure(text="Réponses : 0")
         self.label_correction.configure(text="")
 
-        # Lance le timer dans un thread séparé
+        # Lance le timer 
         self.timer_thread = threading.Thread(
             target=self.attendre_reponses, args=(q,), daemon=True)
         self.timer_thread.start()
 
     def attendre_reponses(self, q):
-        """Attend les réponses des joueurs pendant 15 secondes."""
+        # Attend les réponses des joueurs pendant 15 secondes
         timer  = q.get("timer", 15)
         debut  = time.time()
         partie = state.parties[self.code]
@@ -260,7 +255,7 @@ class PartieFrame(ctk.CTkFrame):
         self.after(0, lambda: self.afficher_correction(q))
 
     def afficher_correction(self, q):
-        """Calcule et publie la correction."""
+        # Calcule score actuel et publie la correction
         partie = state.parties[self.code]
         bonne  = q["reponse"]
         texte  = q["choix"][bonne]
@@ -292,7 +287,7 @@ class PartieFrame(ctk.CTkFrame):
         self.after(5000, lambda: self.apres_correction(q))
 
     def apres_correction(self, q):
-        """Passe à la question suivante ou termine la partie."""
+        # Passe à la question suivante ou termine la partie 
         partie = state.parties[self.code]
         partie["question_index"] += 1
 
@@ -302,7 +297,7 @@ class PartieFrame(ctk.CTkFrame):
             self.terminer_partie_fin()
 
     def terminer_partie_fin(self):
-        """Termine la partie normalement et envoie les scores finaux."""
+        # Termine la partie et envoie les scores finaux 
         partie     = state.parties[self.code]
         prets      = [p for p, s in partie["joueurs_presents"].items() if s == "pret"]
         nb_q       = len(partie["questions"])
@@ -351,7 +346,7 @@ class PartieFrame(ctk.CTkFrame):
         self.app.btn_nouvelle.pack(pady=5)
 
     def fermer_partie(self):
-        """Ferme le cadre de la partie quand tous les joueurs sont partis."""
+        # Ferme le cadre de la partie quand tous les joueurs sont partis ou quand l'anim fait "terminer"
         pub_module.publier_etat(self.pub, self.code, "fin")
         self.deconnecter()
         if self.code in state.parties:
@@ -363,7 +358,7 @@ class PartieFrame(ctk.CTkFrame):
         self.app.btn_nouvelle.pack(pady=5)
 
     def deconnecter(self):
-        """Déconnecte proprement les clients MQTT."""
+        # Déconnecte proprement les clients MQTT 
         self.pub.publish(
             state.topic(self.code, "presence/animateur"), "offline", qos=1, retain=True)
         time.sleep(0.2)
