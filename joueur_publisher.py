@@ -25,7 +25,6 @@ def on_connect(client, userdata, flags, rc, pseudo, code, properties=None):
                    "pret", qos=1, retain=True)
 
 def on_disconnect(client, userdata, flags, rc, properties=None):
-    """Appelé automatiquement à la déconnexion."""
     print(f"[PUB joueur] Déconnecté : {rc}")
 
 def publier_reponse(client, pseudo, code, reponse):
