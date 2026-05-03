@@ -61,7 +61,6 @@ def build_client(pseudo, code, on_state_change, on_question, on_correction, on_s
 
         # Correction 
         elif topic == state.topic(code, "correction"):
-            # Ignorer les retained
             if msg.retain:
                 return
             try:
