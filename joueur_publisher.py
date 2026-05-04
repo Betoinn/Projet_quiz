@@ -26,6 +26,11 @@ def on_connect(client, userdata, flags, rc, pseudo, code, properties=None):
 
 def on_disconnect(client, userdata, flags, rc, properties=None):
     print(f"[PUB joueur] Déconnecté : {rc}")
+    if str(rc) != "Normal disconnection":
+        try:
+            client.reconnect()
+        except Exception as e:
+            print(f"[PUB joueur] Erreur reconnexion : {e}")
 
 def publier_reponse(client, pseudo, code, reponse):
 

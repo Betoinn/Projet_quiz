@@ -100,6 +100,11 @@ def build_client(pseudo, code, on_state_change, on_question, on_correction, on_s
 
     def on_disconnect(c, userdata, flags, rc, properties=None):
         print(f"[SUB joueur {pseudo}] Déconnecté : {rc}")
+        if str(rc) != "Normal disconnection":
+            try:
+                c.reconnect()
+            except Exception as e:
+                print(f"[SUB joueur {pseudo}] Erreur reconnexion : {e}")
 
     client.on_connect    = on_connect
     client.on_message    = on_message
