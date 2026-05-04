@@ -480,7 +480,7 @@ class AnimateurApp(ctk.CTk):
         self.afficher_code(code)
 
     def afficher_code(self, code):
-        """Affiche une popup avec le code de la partie."""
+        # Affiche une fenetre avec le code de la partie
         popup = ctk.CTkToplevel(self)
         popup.title("Code de la partie")
         popup.geometry("300x150")
@@ -495,12 +495,10 @@ class AnimateurApp(ctk.CTk):
                       width=100).pack(pady=15)
 
     def partie_terminee(self, code):
-        """Appelé quand une partie est terminée — réaffiche le bouton nouvelle partie."""
         if len(self.parties_actives) >= MAX_PARTIES:
             self.btn_nouvelle.pack(pady=5)
 
     def on_closing(self):
-        """Déconnecte proprement toutes les parties."""
         for frame in list(self.parties_actives.values()):
             frame.deconnecter()
         self.destroy()
