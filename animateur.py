@@ -162,10 +162,7 @@ class PartieFrame(ctk.CTkFrame):
                     self.label_statut.configure(
                         text=f"En attente ({len(prets)}/2 joueurs)...",
                         text_color="gray")
-            if not self.partie_lancee:
-                questions = partie.get("questions")
-            if len(prets) >= 2 and questions:
-                self.btn_lancer.configure(state="normal")
+    
 
     def maj_reponses(self):
         #Met à jour l'affichage des réponses reçues
