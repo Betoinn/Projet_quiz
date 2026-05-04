@@ -319,6 +319,9 @@ class JoueurApp(ctk.CTk):
             self.frame_pause.pack(fill="both", expand=True, padx=40, pady=40)
         elif etat == "question":
             self.frame_pause.pack_forget()
+            # Réaffiche la question si elle est active
+            if state.question_active:
+                self.afficher_question(state.question_active)
 
     def on_question(self, q):
         """Appele quand une nouvelle question arrive."""

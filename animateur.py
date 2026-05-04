@@ -125,9 +125,10 @@ class PartieFrame(ctk.CTkFrame):
         joueurs = partie.get("joueurs_presents", {})
         prets = [p for p, s in joueurs.items() if s == "pret"]
 
-        if self.partie_lancee and len(prets) == 0 and not self.en_pause:
-            self.after(0, self.mettre_en_pause)
+        if self.partie_lancee and len(prets) == 0:
+            self.after(0, self.fermer_partie)
         elif self.partie_lancee and len(prets) < 2 and not self.en_pause:
+        # Met en pause et affiche le bouton Terminer
             self.after(0, self.mettre_en_pause)
 
     def on_reponse_recue(self, code, pseudo, reponse):
@@ -322,7 +323,7 @@ class PartieFrame(ctk.CTkFrame):
         self.label_scores.configure(text=txt)
         self.label_correction.configure(text="")
         self.btn_stop.configure(state="disabled")
-        self.btn_terminer_def.grid_remove()
+        self.btn_terminer_def.grid()
         self.partie_lancee = False
         self.app.partie_terminee(self.code)
 
