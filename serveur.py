@@ -103,7 +103,7 @@ def on_disconnect(client, userdata, flags, rc, properties=None):
 # Lancement du serveur
 client = paho.Client(
     callback_api_version=paho.CallbackAPIVersion.VERSION2,
-    client_id="serveur-quizzz-NBEK-2026",
+    client_id="serveur-quizzzz-NBEK-2026",
     protocol=paho.MQTTv5
 )
 client.on_connect    = on_connect

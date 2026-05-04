@@ -185,6 +185,7 @@ class PartieFrame(ctk.CTkFrame):
 
     def mettre_en_pause(self):
         self.en_pause = True
+        self.temps_pause = time.time()  # stocke le moment de la pause
         pub_module.publier_pause(self.pub, self.code)
         # Stop : rajoute bouton Reprendre 
         self.btn_stop.configure(text="Reprendre", command=self.reprendre,
@@ -237,6 +238,7 @@ class PartieFrame(ctk.CTkFrame):
         while time.time() - debut < timer:
             # Si en pause, on suspend le timer
             if self.en_pause:
+                debut += time.time() - self.temps_pause  # décale le début
                 time.sleep(0.5)
                 continue
             prets  = [p for p, s in partie["joueurs_presents"].items() if s == "pret"]

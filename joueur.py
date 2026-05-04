@@ -28,6 +28,7 @@ class JoueurApp(ctk.CTk):
         self.code   = ""
         self.pub    = None
         self.sub    = None
+        self.en_pause = False
 
         # FRAME CONNEXION
         self.frame_connexion = ctk.CTkFrame(self)
@@ -313,15 +314,20 @@ class JoueurApp(ctk.CTk):
             self.label_code_affiche.configure(
                 text=f"Partie : {self.code}", text_color="gray")
         elif etat == "pause":
+            self.en_pause = True
             self.frame_question.pack_forget()
             self.frame_correction.pack_forget()
             self.frame_attente.pack_forget()
             self.frame_pause.pack(fill="both", expand=True, padx=40, pady=40)
         elif etat == "question":
+            self.en_pause = False
             self.frame_pause.pack_forget()
-            # Réaffiche la question si elle est active
+            # Réaffiche la frame question sans relancer le timer
             if state.question_active:
-                self.afficher_question(state.question_active)
+                self.frame_attente.pack_forget()
+                self.frame_correction.pack_forget()
+                self.frame_question.pack(fill="both", expand=True, padx=20, pady=10)
+            
 
     def on_question(self, q):
         """Appele quand une nouvelle question arrive."""
@@ -358,8 +364,13 @@ class JoueurApp(ctk.CTk):
         self.after(0, lambda: self.maj_barre_timer(timer, timer))
 
     def maj_barre_timer(self, restant, total):
-        """Met a jour la barre de progression du timer."""
-        if state.reponse_envoyee or state.joueur_state != "question":
+        if state.reponse_envoyee:
+            self.barre_timer.set(0)
+            return
+        if self.en_pause:
+            self.after(500, lambda: self.maj_barre_timer(restant, total))
+            return
+        if state.joueur_state != "question":
             self.barre_timer.set(0)
             return
 
