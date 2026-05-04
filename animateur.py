@@ -128,11 +128,9 @@ class PartieFrame(ctk.CTkFrame):
         prets = [p for p, s in joueurs.items() if s == "pret"]
 
         if self.partie_lancee and len(prets) == 0:
-            # Plus aucun joueur -> fermer la partie
             self.after(0, self.fermer_partie)
         elif self.partie_lancee and len(prets) < 2:
-            # Il reste 1 joueur -> terminer la partie
-            self.after(0, self.terminer_partie_fin)
+            self.after(0, self.mettre_en_pause)
 
     def on_reponse_recue(self, code, pseudo, reponse):
         self.after(0, self.maj_reponses)
