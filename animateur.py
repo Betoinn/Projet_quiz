@@ -119,17 +119,16 @@ class PartieFrame(ctk.CTkFrame):
             text_color="#2ecc71"))
 
     def on_joueur_update(self, code, pseudo, statut):
-        #Appelé quand un joueur se connecte ou se déco
         self.after(0, self.maj_lobby)
 
-        # Vérifie si tous les joueurs sont online
         partie = state.parties.get(code, {})
         joueurs = partie.get("joueurs_presents", {})
         prets = [p for p, s in joueurs.items() if s == "pret"]
 
         if self.partie_lancee and len(prets) == 0:
             self.after(0, self.fermer_partie)
-        elif self.partie_lancee and len(prets) < 2:
+        elif self.partie_lancee and len(prets) < 2 and not self.en_pause:
+        # Met en pause et affiche le bouton Terminer
             self.after(0, self.mettre_en_pause)
 
     def on_reponse_recue(self, code, pseudo, reponse):
